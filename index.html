@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Direktori PIC — Jabatan Fungsional</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+:root{
+  --navy: #10203f;
+  --navy-2: #16294e;
+  --navy-3: #1d3564;
+  --gold: #c9a036;
+  --gold-light: #e8c468;
+  --cream: #faf6ec;
+  --ink: #1b2540;
+  --muted: #667085;
+  --danger: #b23a3a;
+  --success: #2f7a52;
+  --border: #dfd6bd;
+  --radius: 8px;
+  --shadow-sm: 0 1px 2px rgba(16,32,63,0.06);
+  --shadow-md: 0 10px 30px rgba(16,32,63,0.12);
+  --ease: cubic-bezier(.2,.7,.3,1);
+}
+
+*{ box-sizing: border-box; }
+html,body{ margin:0; padding:0; }
+body{
+  font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+  min-height: 100vh;
+}
+.serif{ font-family: 'Fraunces', Georgia, serif; }
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+/* ---------- HERO ---------- */
+.hero{
+  position: relative;
+  background: radial-gradient(circle at 85% -10%, #24407a 0%, transparent 55%), linear-gradient(165deg, var(--navy) 0%, var(--navy-3) 100%);
+  color: #fff;
+  padding: 58px 32px 40px;
+  overflow: hidden;
+}
+.hero-pattern{
+  position: absolute; top: -40px; right: -40px; width: 280px; height: 280px; opacity: 0.13;
+  background-image:
+    repeating-linear-gradient(45deg, var(--gold-light) 0 2px, transparent 2px 22px),
+    repeating-linear-gradient(-45deg, var(--gold-light) 0 2px, transparent 2px 22px);
+  pointer-events: none;
+}
+.hero-inner{ position: relative; max-width: 1120px; margin: 0 auto; }
+.eyebrow-row{ display:flex; align-items:center; gap:10px; margin-bottom: 14px; }
+.eyebrow-dot{ width:7px; height:7px; border-radius:50%; background: var(--gold-light); box-shadow: 0 0 0 4px rgba(232,196,104,0.18); }
+.hero-eyebrow{ color: var(--gold-light); font-size: 13.5px; letter-spacing: 0.02em; }
+.hero h1{ font-size: 42px; font-weight: 600; margin: 0 0 10px; line-height: 1.1; max-width: 680px; }
+.hero p.subtitle{ font-size: 16px; color: #cdd6ec; margin: 0; max-width: 560px; line-height: 1.6; }
+
+.stat-row{ display:flex; align-items:center; gap:22px; margin-top: 26px; }
+.stat-item{ display:flex; flex-direction:column; }
+.stat-num{ font-family:'Fraunces',serif; font-size: 26px; font-weight:600; color: var(--gold-light); line-height:1; }
+.stat-label{ font-size: 12.5px; color: #9fb0d6; margin-top: 4px; }
+.stat-sep{ width:1px; height:32px; background: rgba(255,255,255,0.16); }
+
+.hero-edit-btn{
+  margin-top: 22px; background: none; border: 1px solid rgba(255,255,255,0.28);
+  color: #e7ecf9; font-size: 13px; padding: 8px 15px; border-radius: 999px;
+  cursor: pointer; font-family: inherit; transition: border-color .15s, background .15s;
+  display:inline-flex; align-items:center; gap:6px;
+}
+.hero-edit-btn:hover{ border-color: var(--gold-light); background: rgba(255,255,255,0.07); }
+
+/* ---------- TOOLBAR ---------- */
+.toolbar-wrap{ background: rgba(250,246,236,0.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); position: sticky; top:0; z-index: 25; }
+.toolbar{ max-width: 1120px; margin: 0 auto; padding: 16px 32px; display:flex; align-items:center; gap: 12px; flex-wrap: wrap; }
+.search-box{ flex: 1 1 240px; display:flex; align-items:center; gap:8px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 9px 13px; transition: border-color .15s, box-shadow .15s; }
+.search-box:focus-within{ border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,160,54,0.12); }
+.search-box svg{ flex-shrink:0; opacity:.55; }
+.search-box input{ border:none; outline:none; font-family: inherit; font-size:14px; width:100%; background:transparent; color: var(--ink); }
+.tag-filters{ display:flex; gap:8px; flex-wrap:wrap; }
+.tag-chip{ font-size: 12.5px; padding: 6px 13px; border-radius: 999px; border: 1px solid var(--border); background:#fff; color: var(--muted); cursor: pointer; font-family: inherit; white-space: nowrap; transition: all .15s var(--ease); }
+.tag-chip:hover{ border-color: var(--gold); color: var(--ink); transform: translateY(-1px); }
+.tag-chip.active{ background: var(--navy); border-color: var(--navy); color:#fff; }
+.spacer{ flex: 1 1 auto; }
+
+.btn{ font-family: inherit; font-size: 13.5px; font-weight: 600; padding: 9px 16px; border-radius: var(--radius); border: 1px solid transparent; cursor: pointer; display:inline-flex; align-items:center; gap:7px; transition: transform .1s var(--ease), background .15s, border-color .15s, box-shadow .15s; }
+.btn:active{ transform: scale(0.96); }
+.btn:disabled{ opacity:.6; cursor: default; transform: none; }
+.btn-primary{ background: var(--navy); color:#fff; }
+.btn-primary:hover:not(:disabled){ background: var(--navy-3); }
+.btn-gold{ background: var(--gold); color: var(--navy); }
+.btn-gold:hover:not(:disabled){ background: var(--gold-light); box-shadow: 0 4px 14px rgba(201,160,54,0.35); }
+.btn-ghost{ background:#fff; color: var(--ink); border-color: var(--border); }
+.btn-ghost:hover:not(:disabled){ border-color: var(--gold); }
+.btn-danger-outline{ background:#fff; color: var(--danger); border-color: #e6c6c6; }
+.btn-danger-outline:hover:not(:disabled){ background: #fbeeee; }
+.btn-sm{ padding: 7px 12px; font-size: 12.5px; }
+.btn-icon-lock{ display:inline-flex; }
+
+.admin-banner{ max-width: 1120px; margin: 0 auto; padding: 10px 32px 0; }
+.admin-banner-inner{ display:flex; align-items:center; gap:9px; background: #fff8e6; border: 1px solid var(--gold-light); color: #6b5410; font-size: 13px; padding: 10px 15px; border-radius: var(--radius); animation: slideDown .25s var(--ease); }
+.error-banner-inner{ display:flex; align-items:center; gap:9px; background: #fdecec; border: 1px solid #e6b8b8; color: #7a2424; font-size: 13px; padding: 10px 15px; border-radius: var(--radius); margin-bottom: 18px; }
+@keyframes slideDown{ from{ opacity:0; transform: translateY(-6px);} to{ opacity:1; transform:none;} }
+
+.content{ max-width: 1120px; margin: 0 auto; padding: 30px 32px 90px; }
+.grid{ display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+
+/* ---------- CARD ---------- */
+.card{
+  background: #fff; border: 1px solid var(--border); border-left: 3px solid var(--gold);
+  border-radius: var(--radius); padding: 22px; position: relative; cursor: pointer;
+  transition: box-shadow .2s var(--ease), transform .2s var(--ease), border-color .2s;
+  opacity: 0; transform: translateY(10px);
+}
+.card.card-in{ opacity: 1; transform: translateY(0); }
+.card:hover{ box-shadow: var(--shadow-md); transform: translateY(-3px); border-left-color: var(--gold-light); }
+.card-top{ display:flex; gap: 14px; align-items:flex-start; }
+.avatar{ width: 56px; height:56px; border-radius: 50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:600; font-size:19px; color:#fff; overflow:hidden; border: 2px solid var(--cream); box-shadow: 0 0 0 1px var(--border); }
+.avatar img{ width:100%; height:100%; object-fit:cover; }
+.card-name{ font-family:'Fraunces',serif; font-size: 17.5px; font-weight:600; line-height:1.3; margin: 0 0 3px; }
+.card-phone{ display:flex; align-items:center; gap:6px; color: var(--muted); font-size: 13px; }
+.card-phone svg{ opacity:.6; }
+.card-divider{ height:1px; background: var(--border); margin: 16px 0 14px; }
+.tag-list{ display:flex; flex-wrap:wrap; gap:6px; }
+.tag-pill{ font-size: 12px; padding: 4px 10px; border-radius: 999px; border: 1px solid #d8cf9f; color: var(--navy); background: #fbf7ea; }
+.tag-pill.more{ background: var(--navy); color:#fff; border-color: var(--navy); }
+.card-actions{ position:absolute; top:16px; right:16px; display:flex; gap:6px; }
+.icon-btn{ width:30px; height:30px; border-radius:6px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border); background:#fff; cursor:pointer; color: var(--muted); transition: all .15s; }
+.icon-btn:hover{ border-color: var(--gold); color: var(--ink); transform: translateY(-1px); }
+.icon-btn.danger:hover{ border-color: var(--danger); color: var(--danger); background:#fbeeee; }
+.confirm-row{ display:flex; gap:6px; align-items:center; }
+.confirm-text{ font-size:12px; color: var(--danger); font-weight:600; margin-right:4px; }
+
+.empty-state{ text-align:center; padding: 70px 20px; color: var(--muted); }
+.empty-state svg{ opacity: .35; margin-bottom: 14px; }
+.empty-state .serif{ font-size:22px; color: var(--ink); margin-bottom:8px; }
+
+.toolbar-add-btn{ display:none; }
+
+/* ---------- SKELETON ---------- */
+.skeleton-card{ background:#fff; border:1px solid var(--border); border-left:3px solid var(--border); border-radius: var(--radius); padding:22px; }
+.skel{ background: linear-gradient(90deg, #ece6d6 25%, #f4efe1 37%, #ece6d6 63%); background-size: 400% 100%; animation: shimmer 1.4s ease infinite; border-radius: 4px; }
+@keyframes shimmer{ 0%{ background-position: 100% 0;} 100%{ background-position: -100% 0;} }
+.skel-row{ display:flex; gap:14px; align-items:center; }
+.skel-avatar{ width:56px; height:56px; border-radius:50%; }
+.skel-line{ height:12px; }
+
+/* ---------- MODAL ---------- */
+.overlay{ position: fixed; inset:0; background: rgba(16,32,63,0.55); backdrop-filter: blur(2px); display:flex; align-items:center; justify-content:center; z-index: 100; padding: 20px; animation: fadeIn .18s var(--ease); }
+@keyframes fadeIn{ from{opacity:0} to{opacity:1} }
+.modal{ background: #fff; border-radius: 12px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y:auto; padding: 28px; animation: popIn .2s var(--ease); }
+@keyframes popIn{ from{ opacity:0; transform: scale(.96) translateY(6px);} to{ opacity:1; transform:none;} }
+.modal h2{ font-family:'Fraunces',serif; font-size:22px; margin: 0 0 20px; }
+.field{ margin-bottom: 16px; }
+.field label{ display:block; font-size:12.5px; font-weight:600; color: var(--muted); margin-bottom:6px; }
+.field input[type=text], .field input[type=tel]{ width:100%; padding:10px 12px; border:1px solid var(--border); border-radius: var(--radius); font-family: inherit; font-size: 14px; outline:none; background:#fdfcf8; transition: border-color .15s, box-shadow .15s; }
+.field input:focus{ border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,160,54,0.12); }
+.chip-input-box{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; border:1px solid var(--border); border-radius: var(--radius); padding: 8px; background:#fdfcf8; }
+.chip-input-box:focus-within{ border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,160,54,0.12); }
+.chip{ background: var(--navy); color:#fff; font-size:12px; padding:4px 8px 4px 10px; border-radius:999px; display:flex; align-items:center; gap:6px; animation: popIn .15s var(--ease); }
+.chip button{ background:none; border:none; color:#cdd6ec; cursor:pointer; font-size:13px; line-height:1; padding:0; }
+.chip-input-box input{ border:none; outline:none; flex:1 1 100px; font-size:13.5px; min-width:100px; background:transparent; font-family:inherit; }
+
+.dropzone{
+  border: 1.5px dashed var(--border); border-radius: var(--radius); padding: 18px;
+  display:flex; align-items:center; gap:14px; cursor:pointer; background:#fdfcf8;
+  transition: border-color .15s, background .15s;
+}
+.dropzone:hover, .dropzone.drag-over{ border-color: var(--gold); background: #fffdf6; }
+.dropzone input{ display:none; }
+.photo-preview{ width:60px; height:60px; border-radius:50%; overflow:hidden; flex-shrink:0; border: 1px solid var(--border); display:flex; align-items:center; justify-content:center; background: var(--navy); color:#fff; font-family:'Fraunces',serif; font-weight:600; position:relative; }
+.photo-preview img{ width:100%; height:100%; object-fit:cover; }
+.dropzone-text{ font-size:13px; color: var(--muted); }
+.dropzone-text strong{ color: var(--ink); }
+.photo-remove{ background:none; border:1px solid var(--border); color:var(--danger); font-size:12px; padding:5px 10px; border-radius:6px; cursor:pointer; }
+.photo-remove:hover{ background:#fbeeee; }
+
+.modal-actions{ display:flex; justify-content:flex-end; gap:10px; margin-top: 22px; }
+.hint{ font-size:11.5px; color: var(--muted); margin-top:6px; }
+
+.pin-panel{ width:100%; max-width: 320px; text-align:center; }
+.pin-panel input{ width:100%; text-align:center; letter-spacing: 6px; font-size:20px; padding: 12px; border:1px solid var(--border); border-radius: var(--radius); font-family:'Fraunces',serif; margin: 16px 0 6px; outline:none; }
+.pin-panel input:focus{ border-color: var(--gold); }
+.pin-error{ color: var(--danger); font-size:13px; min-height: 18px; }
+
+/* ---------- DETAIL MODAL ---------- */
+.detail-head{ display:flex; gap:16px; align-items:center; margin-bottom: 8px; }
+.detail-avatar{ width:72px; height:72px; border-radius:50%; overflow:hidden; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:600; font-size:24px; color:#fff; border:2px solid var(--cream); box-shadow: 0 0 0 1px var(--border); }
+.detail-avatar img{ width:100%; height:100%; object-fit:cover; }
+.detail-name{ font-family:'Fraunces',serif; font-size:21px; font-weight:600; margin:0 0 4px; }
+.detail-actions{ display:flex; gap:10px; margin: 18px 0 20px; }
+.detail-actions .btn{ flex:1; justify-content:center; }
+.detail-section-label{ font-size:12px; font-weight:600; color: var(--muted); margin-bottom:8px; text-transform: none; }
+
+/* ---------- TOAST ---------- */
+#toast-wrap{ position: fixed; bottom: 22px; right: 22px; display:flex; flex-direction:column; gap:10px; z-index: 200; }
+.toast{ background: var(--navy); color:#fff; padding: 12px 16px; border-radius: 8px; font-size: 13.5px; display:flex; align-items:center; gap:10px; box-shadow: var(--shadow-md); animation: toastIn .2s var(--ease); max-width: 320px; }
+.toast.error{ background: var(--danger); }
+.toast.success{ background: var(--success); }
+@keyframes toastIn{ from{ opacity:0; transform: translateX(20px);} to{ opacity:1; transform:none;} }
+.toast.toast-out{ animation: toastOut .2s var(--ease) forwards; }
+@keyframes toastOut{ to{ opacity:0; transform: translateX(20px);} }
+
+.loading-wrap{ display:flex; align-items:center; justify-content:center; padding: 100px 20px; color: var(--muted); gap:10px; }
+.spinner{ width:16px; height:16px; border-radius:50%; border: 2px solid var(--border); border-top-color: var(--gold); animation: spin .7s linear infinite; }
+@keyframes spin{ to{ transform: rotate(360deg); } }
+
+.setup-screen{ max-width: 640px; margin: 60px auto; padding: 32px; background:#fff; border:1px solid var(--border); border-radius: 10px; }
+.setup-screen h2{ font-family:'Fraunces',serif; margin-top:0; }
+.setup-screen code{ background: var(--cream); padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+
+@media (max-width: 640px){
+  .hero{ padding: 40px 20px 32px; }
+  .hero h1{ font-size: 30px; }
+  .toolbar, .content, .admin-banner{ padding-left:20px; padding-right:20px; }
+  .stat-row{ gap:16px; }
+  .detail-actions{ flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+<div id="toast-wrap"></div>
+
+<script>
+(function(){
+
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyeZWHlq6hPG3yPw22Q5yANv_pS07to1yO9X7w1EMeBP74Su0QWZ7ng5-R95meOrvnOYg/exec";
+
+  const AVATAR_COLORS = ["#10203f", "#c9a036", "#1d3564", "#8a6d1f", "#2b3f6b"];
+
+  let state = {
+    people: [],
+    meta: { eyebrow: "", title: "", subtitle: "" },
+    isAdmin: false,
+    adminPin: null,
+    search: "",
+    activeTag: null,
+    loading: true,
+    pendingDeleteId: null,
+    error: null
+  };
+
+  const configured = APPS_SCRIPT_URL && APPS_SCRIPT_URL.indexOf("http") === 0;
+
+  // ---------- UTILS ----------
+
+  function escapeHtml(str){
+    return String(str == null ? "" : str).replace(/[&<>"']/g, function(c){
+      return { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c];
+    });
+  }
+  function initials(name){
+    const parts = name.trim().split(/\s+/).filter(Boolean);
+    if(parts.length === 0) return "?";
+    if(parts.length === 1) return parts[0].slice(0,2).toUpperCase();
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+  function avatarColor(name){
+    let sum = 0;
+    for(let i=0;i<name.length;i++) sum += name.charCodeAt(i);
+    return AVATAR_COLORS[sum % AVATAR_COLORS.length];
+  }
+  function waLink(phone){
+    let n = String(phone||"").replace(/[^0-9]/g,"");
+    if(n.startsWith("0")) n = "62" + n.slice(1);
+    else if(!n.startsWith("62")) n = "62" + n;
+    return "https://wa.me/" + n;
+  }
+  function debounce(fn, ms){
+    let t;
+    return function(...args){ clearTimeout(t); t = setTimeout(()=>fn.apply(this,args), ms); };
+  }
+
+  function showToast(message, type){
+    const wrap = document.getElementById("toast-wrap");
+    const el = document.createElement("div");
+    el.className = "toast" + (type ? " " + type : "");
+    el.textContent = message;
+    wrap.appendChild(el);
+    setTimeout(()=>{
+      el.classList.add("toast-out");
+      setTimeout(()=> el.remove(), 220);
+    }, 2600);
+  }
+
+  // ---------- API ----------
+
+  async function apiGet(){
+    const res = await fetch(APPS_SCRIPT_URL + "?action=list");
+    if(!res.ok) throw new Error("HTTP " + res.status);
+    return res.json();
+  }
+  async function apiPost(payload){
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+    if(!res.ok) throw new Error("HTTP " + res.status);
+    return res.json();
+  }
+
+  async function loadData(){
+    state.loading = true;
+    render();
+    try{
+      const data = await apiGet();
+      if(!data.ok) throw new Error(data.error || "Gagal memuat data");
+      state.people = data.people || [];
+      state.meta = data.meta || state.meta;
+      state.error = null;
+    } catch(err){
+      console.error(err);
+      state.error = "Tidak dapat terhubung ke server data. Periksa koneksi internet Anda, atau hubungi admin.";
+    }
+    state.loading = false;
+    render();
+  }
+
+  // ---------- DERIVED ----------
+
+  function allTags(){
+    const set = new Set();
+    state.people.forEach(p => (p.tags||[]).forEach(t => set.add(t)));
+    return Array.from(set).sort((a,b)=>a.localeCompare(b));
+  }
+  function filteredPeople(){
+    const q = state.search.trim().toLowerCase();
+    return state.people.filter(p => {
+      const matchesTag = !state.activeTag || (p.tags||[]).includes(state.activeTag);
+      if(!matchesTag) return false;
+      if(!q) return true;
+      return (p.name + " " + (p.tags||[]).join(" ")).toLowerCase().includes(q);
+    });
+  }
+
+  // ---------- SETUP SCREEN ----------
+
+  function renderSetupScreen(){
+    document.getElementById("app").innerHTML = `
+      <div class="setup-screen">
+        <h2 class="serif">Satu langkah lagi</h2>
+        <p>Halaman ini belum terhubung ke sumber data. Isi <code>APPS_SCRIPT_URL</code> di bagian atas file ini dengan URL Web App Apps Script Anda.</p>
+      </div>`;
+  }
+
+  // ---------- RENDER ----------
+
+  function render(){
+    if(!configured){ renderSetupScreen(); return; }
+    const searchHadFocus = document.activeElement && document.activeElement.id === "search-input";
+    document.getElementById("app").innerHTML = getShellHtml();
+    attachStaticListeners();
+    if(searchHadFocus){
+      const inp = document.getElementById("search-input");
+      inp.focus();
+      inp.selectionStart = inp.selectionEnd = inp.value.length;
+    }
+    renderGrid();
+  }
+
+  function getShellHtml(){
+    const tagCount = allTags().length;
+    return `
+      <div class="hero">
+        <div class="hero-pattern"></div>
+        <div class="hero-inner">
+          <div class="eyebrow-row">
+            <span class="eyebrow-dot"></span>
+            <span class="hero-eyebrow">${escapeHtml(state.meta.eyebrow)}</span>
+          </div>
+          <h1 class="serif">${escapeHtml(state.meta.title)}</h1>
+          <p class="subtitle">${escapeHtml(state.meta.subtitle)}</p>
+          ${!state.loading ? `
+          <div class="stat-row">
+            <div class="stat-item"><span class="stat-num serif">${state.people.length}</span><span class="stat-label">PIC terdaftar</span></div>
+            <div class="stat-sep"></div>
+            <div class="stat-item"><span class="stat-num serif">${tagCount}</span><span class="stat-label">Bidang fungsional</span></div>
+          </div>` : ""}
+          ${state.isAdmin ? `<button class="hero-edit-btn" data-action="edit-header">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+            Ubah judul halaman</button>` : ""}
+        </div>
+      </div>
+
+      ${state.isAdmin ? `
+        <div class="admin-banner">
+          <div class="admin-banner-inner">🔓 Mode Admin aktif — perubahan tersimpan ke server dan terlihat oleh semua pengunjung.</div>
+        </div>` : ""}
+
+      <div class="toolbar-wrap">
+        <div class="toolbar">
+          <div class="search-box">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="search-input" placeholder="Cari nama atau bidang…" value="${escapeHtml(state.search)}">
+          </div>
+          <div class="tag-filters" id="tag-filters">
+            ${allTags().map(t => `<button class="tag-chip ${state.activeTag === t ? "active" : ""}" data-action="filter-tag" data-tag="${escapeHtml(t)}">${escapeHtml(t)}</button>`).join("")}
+          </div>
+          <div class="spacer"></div>
+          ${state.isAdmin ? `<button class="btn btn-gold btn-sm" data-action="add">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Tambah PIC</button>` : ""}
+          <button class="btn btn-sm ${state.isAdmin ? "btn-danger-outline" : "btn-ghost"}" data-action="toggle-admin">
+            ${state.isAdmin ? "Keluar Mode Admin" : "🔒 Mode Admin"}
+          </button>
+        </div>
+      </div>
+
+      <div class="content">
+        <div id="grid-slot"></div>
+      </div>
+
+      <div id="modal-slot"></div>
+    `;
+  }
+
+  function attachStaticListeners(){
+    const searchInput = document.getElementById("search-input");
+    if(searchInput){
+      searchInput.addEventListener("input", debounce(e => { state.search = e.target.value; renderGrid(); }, 120));
+    }
+  }
+
+  function skeletonHtml(){
+    let cards = "";
+    for(let i=0;i<6;i++){
+      cards += `
+        <div class="skeleton-card">
+          <div class="skel-row">
+            <div class="skel skel-avatar"></div>
+            <div style="flex:1;">
+              <div class="skel skel-line" style="width:70%; margin-bottom:8px;"></div>
+              <div class="skel skel-line" style="width:45%;"></div>
+            </div>
+          </div>
+        </div>`;
+    }
+    return `<div class="grid">${cards}</div>`;
+  }
+
+  function renderGrid(){
+    const slot = document.getElementById("grid-slot");
+    if(!slot) return;
+    if(state.loading){ slot.innerHTML = skeletonHtml(); return; }
+
+    let html = "";
+    if(state.error){
+      html += `<div class="error-banner-inner">${escapeHtml(state.error)}</div>`;
+    }
+    const list = filteredPeople();
+
+    if(list.length === 0){
+      slot.innerHTML = html + `
+        <div class="empty-state">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <div class="serif">${state.people.length === 0 ? "Belum ada data PIC" : "Belum ada hasil"}</div>
+          <div>${state.people.length === 0 ? (state.isAdmin ? 'Klik "Tambah PIC" di atas untuk memulai.' : "Silakan hubungi admin untuk melengkapi data.") : "Coba kata kunci atau filter bidang yang lain."}</div>
+        </div>`;
+      return;
+    }
+
+    html += `<div class="grid">`;
+    list.forEach(p => {
+      const isConfirming = state.pendingDeleteId === p.id;
+      const visibleTags = (p.tags||[]).slice(0,4);
+      const extraCount = (p.tags||[]).length - visibleTags.length;
+      html += `
+        <div class="card" data-id="${p.id}" data-action="open-detail">
+          ${state.isAdmin ? `
+            <div class="card-actions">
+              ${isConfirming ? `
+                <div class="confirm-row">
+                  <span class="confirm-text">Hapus?</span>
+                  <button class="icon-btn danger" data-action="delete-confirm" data-id="${p.id}" title="Ya, hapus">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  </button>
+                  <button class="icon-btn" data-action="delete-cancel" title="Batal">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </button>
+                </div>
+              ` : `
+                <button class="icon-btn" data-action="edit" data-id="${p.id}" title="Ubah">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                </button>
+                <button class="icon-btn danger" data-action="delete" data-id="${p.id}" title="Hapus">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                </button>
+              `}
+            </div>
+          ` : ""}
+          <div class="card-top">
+            <div class="avatar" style="background:${p.photo ? "transparent" : avatarColor(p.name)}">
+              ${p.photo ? `<img src="${p.photo}" alt="${escapeHtml(p.name)}">` : initials(p.name)}
+            </div>
+            <div>
+              <p class="card-name">${escapeHtml(p.name)}</p>
+              <div class="card-phone">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                ${escapeHtml(p.phone || "—")}
+              </div>
+            </div>
+          </div>
+          <div class="card-divider"></div>
+          <div class="tag-list">
+            ${visibleTags.map(t => `<span class="tag-pill">${escapeHtml(t)}</span>`).join("") || `<span style="color:var(--muted); font-size:13px;">Belum ada bidang tercatat</span>`}
+            ${extraCount > 0 ? `<span class="tag-pill more">+${extraCount} lagi</span>` : ""}
+          </div>
+        </div>
+      `;
+    });
+    html += `</div>`;
+    slot.innerHTML = html;
+
+    // staggered entrance animation (single orchestrated reveal)
+    const cards = slot.querySelectorAll(".card");
+    cards.forEach((c, i) => {
+      setTimeout(()=> c.classList.add("card-in"), Math.min(i, 8) * 40);
+    });
+  }
+
+  // ---------- MODALS ----------
+
+  function closeModal(){ const slot = document.getElementById("modal-slot"); if(slot) slot.innerHTML = ""; }
+
+  function openDetailModal(personId){
+    const p = state.people.find(x => x.id === personId);
+    if(!p) return;
+    document.getElementById("modal-slot").innerHTML = `
+      <div class="overlay" id="detail-overlay">
+        <div class="modal">
+          <div class="detail-head">
+            <div class="detail-avatar" style="background:${p.photo ? "transparent" : avatarColor(p.name)}">
+              ${p.photo ? `<img src="${p.photo}" alt="${escapeHtml(p.name)}">` : initials(p.name)}
+            </div>
+            <div>
+              <p class="detail-name serif">${escapeHtml(p.name)}</p>
+              <div class="card-phone">${escapeHtml(p.phone || "Nomor belum tercatat")}</div>
+            </div>
+          </div>
+          <div class="detail-actions">
+            ${p.phone ? `
+            <a class="btn btn-gold" href="${waLink(p.phone)}" target="_blank" rel="noopener">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.6-.8-1.9-.9-.3-.1-.4-.1-.6.1-.2.3-.7.9-.8 1-.2.2-.3.2-.5.1-.3-.1-1.2-.4-2.2-1.4-.8-.7-1.4-1.6-1.5-1.9-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.1.2-.3.2-.4.1-.2 0-.3 0-.4-.1-.1-.6-1.4-.8-1.9-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.3-.8.8-.8 1.9s.8 2.2.9 2.4c.1.2 1.6 2.4 3.8 3.4.5.2 1 .4 1.3.5.5.2 1 .1 1.4.1.4-.1 1.3-.5 1.5-1 .2-.5.2-.9.1-1z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.5 1.3 5L2 22l5.2-1.4C8.6 21.5 10.3 22 12 22c5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.1.8.8-3-.2-.3C4 14.8 3.6 13.4 3.6 12c0-4.6 3.8-8.4 8.4-8.4s8.4 3.8 8.4 8.4-3.8 8.4-8.4 8.4z"/></svg>
+              Hubungi via WhatsApp
+            </a>
+            <button class="btn btn-ghost" data-action="copy-phone" data-phone="${escapeHtml(p.phone)}">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Salin nomor
+            </button>` : ""}
+          </div>
+          <div class="detail-section-label">Bidang / jabatan fungsional</div>
+          <div class="tag-list">
+            ${(p.tags||[]).map(t => `<span class="tag-pill">${escapeHtml(t)}</span>`).join("") || `<span style="color:var(--muted); font-size:13px;">Belum ada bidang tercatat</span>`}
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function openPinModal(){
+    document.getElementById("modal-slot").innerHTML = `
+      <div class="overlay" id="pin-overlay">
+        <div class="modal pin-panel">
+          <h2 class="serif" style="text-align:center;">Masuk Mode Admin</h2>
+          <p style="color:var(--muted); font-size:13.5px; margin:0;">Masukkan PIN admin untuk mengubah data.</p>
+          <input type="password" inputmode="numeric" id="pin-input" maxlength="12" autofocus>
+          <div class="pin-error" id="pin-error"></div>
+          <div class="modal-actions" style="justify-content:center;">
+            <button class="btn btn-ghost" data-action="close-modal">Batal</button>
+            <button class="btn btn-primary" id="pin-submit-btn" data-action="pin-submit">Masuk</button>
+          </div>
+        </div>
+      </div>`;
+    const input = document.getElementById("pin-input");
+    input.focus();
+    input.addEventListener("keydown", e => { if(e.key === "Enter") submitPin(); });
+  }
+
+  async function submitPin(){
+    const val = document.getElementById("pin-input").value;
+    const btn = document.getElementById("pin-submit-btn");
+    btn.disabled = true; btn.textContent = "Memeriksa…";
+    try{
+      const res = await apiPost({ action: "login", pin: val });
+      if(res.ok){
+        state.isAdmin = true;
+        state.adminPin = val;
+        closeModal();
+        render();
+        showToast("Mode admin aktif.", "success");
+      } else {
+        document.getElementById("pin-error").textContent = "PIN salah, coba lagi.";
+        document.getElementById("pin-input").value = "";
+        document.getElementById("pin-input").focus();
+        btn.disabled = false; btn.textContent = "Masuk";
+      }
+    } catch(err){
+      document.getElementById("pin-error").textContent = "Tidak dapat terhubung ke server.";
+      btn.disabled = false; btn.textContent = "Masuk";
+    }
+  }
+
+  function openHeaderModal(){
+    const m = state.meta;
+    document.getElementById("modal-slot").innerHTML = `
+      <div class="overlay" id="header-overlay">
+        <div class="modal">
+          <h2 class="serif">Ubah judul halaman</h2>
+          <div class="field"><label>Label kecil (eyebrow)</label><input type="text" id="f-eyebrow" value="${escapeHtml(m.eyebrow)}"></div>
+          <div class="field"><label>Judul utama</label><input type="text" id="f-title" value="${escapeHtml(m.title)}"></div>
+          <div class="field"><label>Sub-judul</label><input type="text" id="f-subtitle" value="${escapeHtml(m.subtitle)}"></div>
+          <div class="modal-actions">
+            <button class="btn btn-ghost" data-action="close-modal">Batal</button>
+            <button class="btn btn-gold" id="save-header-btn" data-action="save-header">Simpan</button>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  async function saveHeader(){
+    const btn = document.getElementById("save-header-btn");
+    btn.disabled = true; btn.textContent = "Menyimpan…";
+    const meta = {
+      eyebrow: document.getElementById("f-eyebrow").value.trim(),
+      title: document.getElementById("f-title").value.trim(),
+      subtitle: document.getElementById("f-subtitle").value.trim()
+    };
+    try{
+      const res = await apiPost({ action: "updateMeta", pin: state.adminPin, meta });
+      if(res.ok){
+        state.meta = res.meta;
+        closeModal();
+        render();
+        showToast("Judul halaman disimpan.", "success");
+      } else {
+        showToast(res.error || "Gagal menyimpan.", "error");
+        btn.disabled = false; btn.textContent = "Simpan";
+      }
+    } catch(err){
+      showToast("Tidak dapat terhubung ke server.", "error");
+      btn.disabled = false; btn.textContent = "Simpan";
+    }
+  }
+
+  let modalTags = [];
+  let modalPhoto = null;
+
+  function openPersonModal(personId){
+    const person = personId ? state.people.find(p => p.id === personId) : null;
+    modalTags = person ? [...(person.tags||[])] : [];
+    modalPhoto = person ? person.photo : null;
+
+    document.getElementById("modal-slot").innerHTML = `
+      <div class="overlay" id="person-overlay">
+        <div class="modal">
+          <h2 class="serif">${person ? "Ubah data PIC" : "Tambah PIC baru"}</h2>
+
+          <div class="field">
+            <label>Foto (opsional)</label>
+            <div class="dropzone" id="dropzone">
+              <div class="photo-preview" id="photo-preview">${modalPhoto ? `<img src="${modalPhoto}">` : `<span>${person ? initials(person.name) : "?"}</span>`}</div>
+              <div class="dropzone-text">
+                <div><strong>Klik untuk pilih foto</strong>, atau seret file ke sini</div>
+                <div>JPG/PNG, otomatis dipadatkan.</div>
+              </div>
+              <input type="file" accept="image/*" id="f-photo">
+            </div>
+            ${modalPhoto ? `<div style="margin-top:8px;"><button type="button" class="photo-remove" id="remove-photo-btn">Hapus foto</button></div>` : ""}
+          </div>
+
+          <div class="field"><label>Nama lengkap &amp; gelar</label><input type="text" id="f-name" placeholder="mis. Nama Lengkap, S.E., M.Sc." value="${person ? escapeHtml(person.name) : ""}"></div>
+          <div class="field"><label>Nomor telepon / WhatsApp</label><input type="tel" id="f-phone" placeholder="mis. 0812-3456-7890" value="${person ? escapeHtml(person.phone) : ""}"></div>
+          <div class="field">
+            <label>Bidang / jabatan fungsional yang ditangani</label>
+            <div class="chip-input-box" id="chip-box"><input type="text" id="f-tag-input" placeholder="Ketik lalu tekan Enter"></div>
+            <div class="hint">Tekan Enter atau koma setelah tiap bidang.</div>
+          </div>
+          <div class="modal-actions">
+            <button class="btn btn-ghost" data-action="close-modal">Batal</button>
+            <button class="btn btn-gold" id="save-person-btn" data-action="save-person" data-id="${person ? person.id : ""}">Simpan</button>
+          </div>
+        </div>
+      </div>`;
+
+    renderChips();
+    setupDropzone();
+
+    const tagInput = document.getElementById("f-tag-input");
+    tagInput.addEventListener("keydown", e => {
+      if(e.key === "Enter" || e.key === ","){
+        e.preventDefault();
+        const val = tagInput.value.trim().replace(/,$/, "");
+        if(val){ modalTags.push(val); tagInput.value = ""; renderChips(); }
+      } else if(e.key === "Backspace" && tagInput.value === "" && modalTags.length){
+        modalTags.pop(); renderChips();
+      }
+    });
+
+    const removeBtn = document.getElementById("remove-photo-btn");
+    if(removeBtn){
+      removeBtn.addEventListener("click", () => {
+        modalPhoto = null;
+        openPersonModal(personId); // re-render modal with photo cleared
+      });
+    }
+  }
+
+  function setupDropzone(){
+    const zone = document.getElementById("dropzone");
+    const input = document.getElementById("f-photo");
+    zone.addEventListener("click", () => input.click());
+    input.addEventListener("change", e => { if(e.target.files[0]) handlePhotoFile(e.target.files[0]); });
+    ["dragover","dragenter"].forEach(evt => zone.addEventListener(evt, e => { e.preventDefault(); zone.classList.add("drag-over"); }));
+    ["dragleave","drop"].forEach(evt => zone.addEventListener(evt, e => { e.preventDefault(); zone.classList.remove("drag-over"); }));
+    zone.addEventListener("drop", e => {
+      const file = e.dataTransfer.files[0];
+      if(file && file.type.startsWith("image/")) handlePhotoFile(file);
+    });
+  }
+
+  function renderChips(){
+    const box = document.getElementById("chip-box");
+    const input = document.getElementById("f-tag-input");
+    box.querySelectorAll(".chip").forEach(c => c.remove());
+    modalTags.forEach((t, i) => {
+      const chip = document.createElement("span");
+      chip.className = "chip";
+      chip.innerHTML = `${escapeHtml(t)} <button type="button" data-idx="${i}" data-action="remove-chip">✕</button>`;
+      box.insertBefore(chip, input);
+    });
+  }
+
+  function handlePhotoFile(file){
+    const reader = new FileReader();
+    reader.onload = function(ev){
+      const img = new Image();
+      img.onload = function(){
+        const size = 160;
+        const canvas = document.createElement("canvas");
+        canvas.width = size; canvas.height = size;
+        const ctx = canvas.getContext("2d");
+        const scale = Math.max(size / img.width, size / img.height);
+        const w = img.width * scale, h = img.height * scale;
+        ctx.drawImage(img, (size - w) / 2, (size - h) / 2, w, h);
+        modalPhoto = canvas.toDataURL("image/jpeg", 0.7);
+        const preview = document.getElementById("photo-preview");
+        if(preview) preview.innerHTML = `<img src="${modalPhoto}">`;
+        if(!document.getElementById("remove-photo-btn")){
+          const field = document.getElementById("dropzone").parentElement;
+          const btnWrap = document.createElement("div");
+          btnWrap.style.marginTop = "8px";
+          btnWrap.innerHTML = `<button type="button" class="photo-remove" id="remove-photo-btn">Hapus foto</button>`;
+          field.appendChild(btnWrap);
+          document.getElementById("remove-photo-btn").addEventListener("click", () => {
+            modalPhoto = null;
+            document.getElementById("photo-preview").innerHTML = `<span>?</span>`;
+            btnWrap.remove();
+          });
+        }
+      };
+      img.src = ev.target.result;
+    };
+    reader.onerror = function(){ showToast("Gagal membaca gambar. Coba file lain.", "error"); };
+    reader.readAsDataURL(file);
+  }
+
+  async function savePerson(existingId){
+    const name = document.getElementById("f-name").value.trim();
+    const phone = document.getElementById("f-phone").value.trim();
+    if(!name){ showToast("Nama wajib diisi.", "error"); return; }
+    const btn = document.getElementById("save-person-btn");
+    btn.disabled = true; btn.textContent = "Menyimpan…";
+    const person = { id: existingId || undefined, name, phone, tags: [...modalTags], photo: modalPhoto || "" };
+    try{
+      const res = await apiPost({
+        action: existingId ? "updatePerson" : "addPerson",
+        pin: state.adminPin,
+        person
+      });
+      if(res.ok){
+        state.people = res.people;
+        closeModal();
+        render();
+        showToast(existingId ? "Perubahan disimpan." : "PIC baru ditambahkan.", "success");
+      } else {
+        showToast(res.error || "Gagal menyimpan.", "error");
+        btn.disabled = false; btn.textContent = "Simpan";
+      }
+    } catch(err){
+      showToast("Tidak dapat terhubung ke server. Foto yang terlalu besar bisa jadi penyebabnya.", "error");
+      btn.disabled = false; btn.textContent = "Simpan";
+    }
+  }
+
+  async function deletePerson(id){
+    state.pendingDeleteId = null;
+    try{
+      const res = await apiPost({ action: "deletePerson", pin: state.adminPin, id });
+      if(res.ok){ state.people = res.people; showToast("Data dihapus.", "success"); render(); }
+      else { showToast(res.error || "Gagal menghapus.", "error"); renderGrid(); }
+    } catch(err){ showToast("Tidak dapat terhubung ke server.", "error"); renderGrid(); }
+  }
+
+  // ---------- EVENTS ----------
+
+  document.addEventListener("click", (e) => {
+    const el = e.target.closest("[data-action]");
+    if(!el) return;
+    const action = el.dataset.action;
+
+    if(action === "filter-tag"){
+      const tag = el.dataset.tag;
+      state.activeTag = state.activeTag === tag ? null : tag;
+      render();
+    } else if(action === "toggle-admin"){
+      if(state.isAdmin){ state.isAdmin = false; state.adminPin = null; render(); }
+      else { openPinModal(); }
+    } else if(action === "edit-header"){
+      openHeaderModal();
+    } else if(action === "close-modal"){
+      closeModal();
+    } else if(action === "add"){
+      openPersonModal(null);
+    } else if(action === "open-detail"){
+      openDetailModal(el.dataset.id);
+    } else if(action === "edit"){
+      e.stopPropagation();
+      openPersonModal(el.dataset.id);
+    } else if(action === "delete"){
+      e.stopPropagation();
+      state.pendingDeleteId = el.dataset.id;
+      renderGrid();
+    } else if(action === "delete-cancel"){
+      e.stopPropagation();
+      state.pendingDeleteId = null;
+      renderGrid();
+    } else if(action === "delete-confirm"){
+      e.stopPropagation();
+      deletePerson(el.dataset.id);
+    } else if(action === "pin-submit"){
+      submitPin();
+    } else if(action === "save-header"){
+      saveHeader();
+    } else if(action === "save-person"){
+      savePerson(el.dataset.id || null);
+    } else if(action === "remove-chip"){
+      modalTags.splice(Number(el.dataset.idx), 1);
+      renderChips();
+    } else if(action === "copy-phone"){
+      const phone = el.dataset.phone;
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(phone).then(()=> showToast("Nomor disalin.", "success"))
+          .catch(()=> showToast("Gagal menyalin nomor.", "error"));
+      }
+    }
+
+    if(e.target.classList.contains("overlay")) closeModal();
+  });
+
+  if(configured){ loadData(); } else { renderSetupScreen(); }
+})();
+</script>
+</body>
+</html>
