@@ -211,7 +211,7 @@ body{
 .hint{ font-size:11.5px; color: var(--muted); margin-top:6px; }
 
 .pin-panel{ width:100%; max-width: 320px; text-align:center; }
-.pin-panel input{ width:100%; text-align:center; letter-spacing: 6px; font-size:20px; padding: 12px; border:1px solid var(--border); border-radius: var(--radius); font-family:'Fraunces',serif; margin: 16px 0 6px; outline:none; }
+.pin-panel input{ width:100%; text-align:center; letter-spacing: 1px; font-size:17px; padding: 12px; border:1px solid var(--border); border-radius: var(--radius); font-family:'Plus Jakarta Sans', sans-serif; margin: 16px 0 6px; outline:none; }
 .pin-panel input:focus{ border-color: var(--gold); }
 .pin-error{ color: var(--danger); font-size:13px; min-height: 18px; }
 
@@ -579,7 +579,7 @@ body{
       '<div class="overlay" id="pin-overlay"><div class="modal pin-panel">' +
       '<h2 class="serif" style="text-align:center;">Masuk Mode Admin</h2>' +
       '<p style="color:var(--muted); font-size:13.5px; margin:0;">Masukkan PIN admin untuk mengubah data.</p>' +
-      '<input type="password" inputmode="numeric" id="pin-input" maxlength="12" autofocus>' +
+      '<input type="password" id="pin-input" maxlength="64" autofocus>' +
       '<div class="pin-error" id="pin-error"></div>' +
       '<div class="modal-actions" style="justify-content:center;">' +
       '<button class="btn btn-ghost" data-action="close-modal">Batal</button>' +
