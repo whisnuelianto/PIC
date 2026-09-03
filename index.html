@@ -157,6 +157,14 @@ body{
 }
 .team-card:hover .team-photo-fallback{ transform: scale(1.06); }
 
+.photo-slideshow{ position:absolute; inset:0; }
+.photo-slide{ position:absolute; inset:0; opacity:0; transition: opacity .6s var(--ease); }
+.photo-slide.active{ opacity:1; z-index:1; }
+.photo-slide img{ width:100%; height:100%; object-fit:cover; }
+.photo-dots{ position:absolute; bottom:9px; left:0; right:0; display:flex; justify-content:center; gap:5px; z-index:3; }
+.photo-dots .dot{ width:5px; height:5px; border-radius:50%; background:rgba(255,255,255,0.55); transition: all .2s var(--ease); }
+.photo-dots .dot.active{ background:#fff; width:14px; border-radius:3px; }
+
 .team-overlay-top{ position:absolute; top:10px; left:10px; right:10px; display:flex; justify-content:space-between; z-index:3; }
 .team-overlay-bottom{
   position:absolute; left:0; right:0; bottom:0; padding: 34px 12px 12px;
@@ -223,6 +231,11 @@ body{
 .dropzone-text strong{ color: var(--ink); }
 .photo-remove{ background:none; border:1px solid var(--border); color:var(--danger); font-size:12px; padding:5px 10px; border-radius:6px; cursor:pointer; }
 .photo-remove:hover{ background:#fbeeee; }
+.photo-thumb-strip{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom: 10px; }
+.photo-thumb{ width:56px; height:56px; border-radius:10px; overflow:hidden; position:relative; border:1px solid var(--border); flex-shrink:0; }
+.photo-thumb img{ width:100%; height:100%; object-fit:cover; }
+.thumb-remove{ position:absolute; top:2px; right:2px; width:18px; height:18px; border-radius:50%; background:rgba(13,25,48,0.75); color:#fff; border:none; font-size:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; line-height:1; }
+.thumb-remove:hover{ background: var(--danger); }
 .or-divider{ text-align:center; font-size:11.5px; color: var(--muted); margin: 10px 0; position:relative; }
 .or-divider::before, .or-divider::after{ content:""; position:absolute; top:50%; width:42%; height:1px; background: var(--border); }
 .or-divider::before{ left:0; }
@@ -540,6 +553,31 @@ body{
     startAuto();
   }
 
+  let photoCycleTimer = null;
+
+  function setupPhotoSlideshows(root){
+    clearInterval(photoCycleTimer);
+    photoCycleTimer = setInterval(function(){
+      const scope = root || document;
+      const wraps = scope.querySelectorAll('.photo-slideshow[data-photo-count]');
+      wraps.forEach(function(wrap){
+        const count = Number(wrap.dataset.photoCount);
+        if(!count || count < 2) return;
+        const slides = wrap.querySelectorAll(".photo-slide");
+        const dots = wrap.querySelectorAll(".photo-dots .dot");
+        let current = 0;
+        slides.forEach(function(s, i){ if(s.classList.contains("active")) current = i; });
+        const next = (current + 1) % count;
+        slides[current].classList.remove("active");
+        slides[next].classList.add("active");
+        if(dots.length){
+          dots[current].classList.remove("active");
+          dots[next].classList.add("active");
+        }
+      });
+    }, 2200);
+  }
+
   function skeletonHtml(){
     let cards = "";
     for(let i=0;i<4;i++){
@@ -550,15 +588,33 @@ body{
     return '<div class="carousel-track">' + cards + '</div>';
   }
 
+  function getPersonPhotos(p){
+    if(p.photos && p.photos.length) return p.photos;
+    if(p.photo) return [p.photo];
+    return [];
+  }
+
   function photoBlockHtml(p, big){
+    const photos = getPersonPhotos(p);
     const initialsText = initials(p.name);
-    const fontClass = big ? '56' : '30%';
-    if(p.photo){
-      return '<img src="' + p.photo + '" alt="' + escapeHtml(p.name) + '">';
+
+    if(photos.length === 0){
+      const colors = duotone(p.name);
+      const sizeStyle = big ? "font-size:56px;" : "";
+      return '<div class="' + (big ? "detail-photo-fallback" : "team-photo-fallback") + '" style="background:linear-gradient(150deg,' + colors[0] + ',' + colors[1] + ');' + sizeStyle + '">' + initialsText + '</div>';
     }
-    const colors = duotone(p.name);
-    const sizeStyle = big ? "font-size:56px;" : "";
-    return '<div class="' + (big ? "detail-photo-fallback" : "team-photo-fallback") + '" style="background:linear-gradient(150deg,' + colors[0] + ',' + colors[1] + ');' + sizeStyle + '">' + initialsText + '</div>';
+
+    let html = '<div class="photo-slideshow" data-photo-count="' + photos.length + '">';
+    photos.forEach(function(src, i){
+      html += '<div class="photo-slide' + (i === 0 ? " active" : "") + '" data-index="' + i + '"><img src="' + src + '" alt="' + escapeHtml(p.name) + '"></div>';
+    });
+    if(photos.length > 1){
+      html += '<div class="photo-dots">';
+      photos.forEach(function(_, i){ html += '<span class="dot' + (i === 0 ? " active" : "") + '"></span>'; });
+      html += '</div>';
+    }
+    html += '</div>';
+    return html;
   }
 
   function renderGrid(){
@@ -638,6 +694,7 @@ body{
     });
 
     setupCarousel();
+    setupPhotoSlideshows();
   }
 
   function closeModal(){ const slot = document.getElementById("modal-slot"); if(slot) slot.innerHTML = ""; }
@@ -667,6 +724,7 @@ body{
     }
     html += '</div></div></div></div>';
     document.getElementById("modal-slot").innerHTML = html;
+    setupPhotoSlideshows();
   }
 
   function openPinModal(){
@@ -748,23 +806,25 @@ body{
   }
 
   let modalTags = [];
-  let modalPhoto = null;
+  let modalPhotos = [];
+  const MAX_PHOTOS = 5;
 
   function openPersonModal(personId){
     const person = personId ? state.people.find(function(p){ return p.id === personId; }) : null;
     modalTags = person ? person.tags.slice() : [];
-    modalPhoto = person ? person.photo : null;
+    modalPhotos = person ? getPersonPhotos(person).slice() : [];
 
     let html = '<div class="overlay" id="person-overlay"><div class="modal">';
     html += '<h2 class="serif">' + (person ? "Ubah data PIC" : "Tambah PIC baru") + '</h2>';
-    html += '<div class="field"><label>Foto (opsional)</label><div class="dropzone" id="dropzone">';
-    html += '<div class="photo-preview" id="photo-preview">' + (modalPhoto ? '<img src="' + modalPhoto + '">' : '<span>' + (person ? initials(person.name) : "?") + '</span>') + '</div>';
-    html += '<div class="dropzone-text"><div><strong>Klik untuk pilih foto</strong>, atau seret file ke sini</div><div>JPG/PNG, otomatis dipadatkan.</div></div>';
+    html += '<div class="field"><label>Foto (boleh lebih dari satu — akan bergantian tampil otomatis)</label>';
+    html += '<div class="photo-thumb-strip" id="photo-thumb-strip"></div>';
+    html += '<div class="dropzone" id="dropzone">';
+    html += '<div class="photo-preview" id="photo-preview"><span>' + (person ? initials(person.name) : "?") + '</span></div>';
+    html += '<div class="dropzone-text" id="dropzone-text"><div><strong>Klik untuk tambah foto</strong>, atau seret file ke sini</div><div>JPG/PNG, otomatis dipadatkan. Maks ' + MAX_PHOTOS + ' foto.</div></div>';
     html += '<input type="file" accept="image/*" id="f-photo"></div>';
-    html += '<div id="photo-remove-wrap">' + (modalPhoto ? '<div style="margin-top:8px;"><button type="button" class="photo-remove" id="remove-photo-btn">Hapus foto</button></div>' : '') + '</div>';
     html += '<div class="or-divider">atau</div>';
     html += '<div style="display:flex; gap:8px;"><input type="text" id="f-photo-url" placeholder="Tempel link foto, mis. https://i.imgur.com/xxxx.jpg" style="flex:1; padding:9px 11px; border:1px solid var(--border); border-radius:var(--radius); font-family:inherit; font-size:13.5px; background:#fdfcf8;">';
-    html += '<button type="button" class="btn btn-ghost btn-sm" id="use-photo-url-btn">Gunakan</button></div>';
+    html += '<button type="button" class="btn btn-ghost btn-sm" id="use-photo-url-btn">Tambah</button></div>';
     html += '<div class="hint">Upload foto ke imgur.com (atau layanan hosting gambar lain), salin link gambarnya, lalu tempel di sini.</div>';
     html += '</div>';
     html += '<div class="field"><label>Nama lengkap &amp; gelar</label><input type="text" id="f-name" placeholder="mis. Nama Lengkap, S.E., M.Sc." value="' + (person ? escapeHtml(person.name) : "") + '"></div>';
@@ -780,6 +840,7 @@ body{
     document.getElementById("modal-slot").innerHTML = html;
 
     renderChips();
+    renderPhotoThumbs();
     setupDropzone();
 
     const useUrlBtn = document.getElementById("use-photo-url-btn");
@@ -787,8 +848,8 @@ body{
     function applyPhotoUrl(){
       const val = urlInput.value.trim();
       if(!val){ showToast("Tempel link foto dulu.", "error"); return; }
-      setPhotoPreview(val);
-      showToast("Link foto diterapkan.", "success");
+      addPhotoToModal(val);
+      urlInput.value = "";
     }
     useUrlBtn.addEventListener("click", applyPhotoUrl);
     urlInput.addEventListener("keydown", function(e){ if(e.key === "Enter"){ e.preventDefault(); applyPhotoUrl(); } });
@@ -803,27 +864,53 @@ body{
         modalTags.pop(); renderChips();
       }
     });
+  }
 
-    const removeBtn = document.getElementById("remove-photo-btn");
-    if(removeBtn){
-      removeBtn.addEventListener("click", function(){
-        modalPhoto = null;
-        document.getElementById("photo-preview").innerHTML = "<span>?</span>";
-        document.getElementById("photo-remove-wrap").innerHTML = "";
-      });
+  function renderPhotoThumbs(){
+    const strip = document.getElementById("photo-thumb-strip");
+    if(!strip) return;
+    if(modalPhotos.length === 0){ strip.innerHTML = ""; strip.style.display = "none"; }
+    else {
+      strip.style.display = "flex";
+      strip.innerHTML = modalPhotos.map(function(src, i){
+        return '<div class="photo-thumb"><img src="' + src + '"><button type="button" class="thumb-remove" data-idx="' + i + '" data-action="remove-photo" title="Hapus foto ini">✕</button></div>';
+      }).join("");
     }
+    const zone = document.getElementById("dropzone");
+    const text = document.getElementById("dropzone-text");
+    if(zone && text){
+      if(modalPhotos.length >= MAX_PHOTOS){
+        zone.style.pointerEvents = "none";
+        zone.style.opacity = "0.5";
+        text.innerHTML = '<div><strong>Sudah mencapai batas ' + MAX_PHOTOS + ' foto</strong></div><div>Hapus salah satu foto untuk menambah yang baru.</div>';
+      } else {
+        zone.style.pointerEvents = "";
+        zone.style.opacity = "";
+        text.innerHTML = '<div><strong>Klik untuk tambah foto</strong>, atau seret file ke sini</div><div>JPG/PNG, otomatis dipadatkan. Maks ' + MAX_PHOTOS + ' foto.</div>';
+      }
+    }
+  }
+
+  function addPhotoToModal(src){
+    if(modalPhotos.length >= MAX_PHOTOS){
+      showToast("Maksimal " + MAX_PHOTOS + " foto per orang.", "error");
+      return;
+    }
+    modalPhotos.push(src);
+    renderPhotoThumbs();
+    showToast("Foto ditambahkan.", "success");
   }
 
   function setupDropzone(){
     const zone = document.getElementById("dropzone");
     const input = document.getElementById("f-photo");
-    zone.addEventListener("click", function(){ input.click(); });
-    input.addEventListener("change", function(e){ if(e.target.files[0]) handlePhotoFile(e.target.files[0]); });
-    ["dragover","dragenter"].forEach(function(evt){ zone.addEventListener(evt, function(e){ e.preventDefault(); zone.classList.add("drag-over"); }); });
+    zone.addEventListener("click", function(){ if(modalPhotos.length < MAX_PHOTOS) input.click(); });
+    input.addEventListener("change", function(e){ if(e.target.files[0]) handlePhotoFile(e.target.files[0]); input.value = ""; });
+    ["dragover","dragenter"].forEach(function(evt){ zone.addEventListener(evt, function(e){ e.preventDefault(); if(modalPhotos.length < MAX_PHOTOS) zone.classList.add("drag-over"); }); });
     ["dragleave","drop"].forEach(function(evt){ zone.addEventListener(evt, function(e){ e.preventDefault(); zone.classList.remove("drag-over"); }); });
     zone.addEventListener("drop", function(e){
       const file = e.dataTransfer.files[0];
-      if(file && file.type.indexOf("image/") === 0) handlePhotoFile(file);
+      if(file && file.type.indexOf("image/") === 0 && modalPhotos.length < MAX_PHOTOS) handlePhotoFile(file);
     });
   }
 
@@ -896,25 +983,10 @@ body{
     throw new Error((data && data.data && data.data.error) || "Upload ke Imgur gagal");
   }
 
-  function setPhotoPreview(url){
-    modalPhoto = url;
-    const preview = document.getElementById("photo-preview");
-    if(preview) preview.innerHTML = '<img src="' + url + '">';
-    const wrap = document.getElementById("photo-remove-wrap");
-    if(wrap && !document.getElementById("remove-photo-btn")){
-      wrap.innerHTML = '<div style="margin-top:8px;"><button type="button" class="photo-remove" id="remove-photo-btn">Hapus foto</button></div>';
-      document.getElementById("remove-photo-btn").addEventListener("click", function(){
-        modalPhoto = null;
-        document.getElementById("photo-preview").innerHTML = "<span>?</span>";
-        wrap.innerHTML = "";
-      });
-    }
-  }
-
   function setPhotoLoading(isLoading){
     const zone = document.getElementById("dropzone");
     if(!zone) return;
-    const textEl = zone.querySelector(".dropzone-text");
+    const textEl = document.getElementById("dropzone-text");
     if(isLoading){
       zone.dataset.origText = textEl.innerHTML;
       textEl.innerHTML = '<div><strong>Mengunggah foto…</strong></div><div>Mohon tunggu sebentar.</div>';
@@ -938,7 +1010,7 @@ body{
             const blob = await imageToBlob(img, 900, 0.85);
             const url = await uploadToImgur(blob);
             setPhotoLoading(false);
-            setPhotoPreview(url);
+            addPhotoToModal(url);
             return;
           } catch(err){
             console.error(err);
@@ -946,7 +1018,7 @@ body{
             showToast("Upload ke Imgur gagal, memakai penyimpanan lokal sebagai cadangan.", "error");
           }
         }
-        setPhotoPreview(localCompressFallback(img));
+        addPhotoToModal(localCompressFallback(img));
       };
       img.src = ev.target.result;
     };
@@ -961,7 +1033,7 @@ body{
     if(!name){ showToast("Nama wajib diisi.", "error"); return; }
     const btn = document.getElementById("save-person-btn");
     btn.disabled = true; btn.textContent = "Menyimpan…";
-    const person = { id: existingId || undefined, name: name, position: position, phone: phone, tags: modalTags.slice(), photo: modalPhoto || "" };
+    const person = { id: existingId || undefined, name: name, position: position, phone: phone, tags: modalTags.slice(), photos: modalPhotos.slice() };
     try{
       const res = await apiPost({
         action: existingId ? "updatePerson" : "addPerson",
@@ -1034,6 +1106,9 @@ body{
     } else if(action === "remove-chip"){
       modalTags.splice(Number(el.dataset.idx), 1);
       renderChips();
+    } else if(action === "remove-photo"){
+      modalPhotos.splice(Number(el.dataset.idx), 1);
+      renderPhotoThumbs();
     } else if(action === "copy-phone"){
       const phone = el.dataset.phone;
       if(navigator.clipboard && navigator.clipboard.writeText){
